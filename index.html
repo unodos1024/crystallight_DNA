@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>교회 사역 DNA 퀴즈</title>
+  <style>
+    :root{--bg:#e9f7f3;--card:#fff;--accent:#0b6b5f;--btn:#0b9b7f}
+    body{font-family:system-ui,-apple-system,"Noto Sans KR",Helvetica,Arial; margin:0; background:linear-gradient(180deg,var(--bg),#f7fffb); color:#08323a}
+    .wrap{max-width:920px;margin:36px auto;padding:28px}
+    .header{text-align:center;padding:12px 0}
+    .card{background:var(--card);border-radius:16px;padding:22px;box-shadow:0 6px 20px rgba(2,24,26,0.06)}
+    .question{font-size:20px;font-weight:700;margin-bottom:18px}
+    .controls{display:flex;gap:12px}
+    .btn{flex:1;padding:12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .btn.yes{background:var(--btn);color:white}
+    .btn.no{background:#e6f3f0;color:var(--accent)}
+    .meta{margin-top:14px;color:#346a63}
+    .result{padding:18px;border-radius:12px;background:linear-gradient(180deg,#f2fff8,#ffffff);border:1px solid #e6f5f1}
+    .result h3{margin:0 0 8px}
+    .small{font-size:14px;color:#2b5854}
+    .actions{display:flex;gap:10px;margin-top:16px}
+    .restart{background:#fff;border:1px solid #ddd;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .breadcrumb{font-size:13px;color:#4d7b75;margin-bottom:8px}
+    @media(max-width:520px){.question{font-size:18px}}
+  </style>
+</head>
+<body>
+  <div id="app" class="wrap">
+    <div class="header">
+      <h1>교회 사역 매칭 퀴즈</h1>
+      <p class="small">질문에 따라 선택하면 추천 사역을 안내합니다</p>
+    </div>
+
+    <div class="card">
+      <template v-if="!finished">
+        <div class="breadcrumb">진행: {{path.map(p=>p.label).join(' → ') || '시작'}}</div>
+        <div class="question">Q{{current.id}}. {{current.text}}</div>
+
+        <div class="controls">
+          <button class="btn yes" @click="choose('yes')">네</button>
+          <button class="btn no" @click="choose('no')">아니오</button>
+        </div>
+
+        <div class="meta">현재 노드: {{currentType}}</div>
+      </template>
+
+      <template v-else>
+        <div class="result">
+          <h3>추천 사역</h3>
+          <ul>
+            <li v-for="(r,i) in results" :key="i">• {{r}}</li>
+          </ul>
+          <p class="small">설명: 선택 흐름에 따라 가장 적합한 사역을 추천합니다.</p>
+
+          <div class="actions">
+            <button class="restart" @click="restart()">처음으로</button>
+            <button class="restart" @click="exportShare()">결과 복사</button>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <p style="text-align:center;margin-top:12px;color:#5b7f78;font-size:13px">수정빛 교회</p>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, computed } = Vue;
+
+    // 의사결정 트리 데이터 (질문 노드와 결과 노드)
+    const TREE = {
+      nodes: {
+        1: { id:1, text: '새로운 상황이나 사람을 만났을 때 금세 어색함을 풀고 대화할 수 있다.', yes:2, no:6 },
+        2: { id:2, text: '모임에서 분위기가 조용하면 내가 먼저 말하거나 분위기를 띄우는 편이다.', yes:3, no:4 },
+        3: { id:3, text: '낯선 사람과 대화할 때 그들의 이름과 이야기를 기억하려고 노력한다.', yes:{result:['새가족부','안내부']}, no:5 },
+        4: { id:4, text: '사람들을 이끄는 일보다는, 정해진 일 안에서 안정감 있게 일하는 게 좋다.', yes:5, no:7 },
+        5: { id:5, text: '교회가 질서 있고 원활하게 운영되는 모습을 보면 뿌듯하다.', yes:{result:['주차부','예배안내부']}, no:{result:['행사지원부','청소팀']} },
+        6: { id:6, text: '혼자 집중해서 무언가를 만들거나 정리할 때 시간이 잘 간다.', yes:9, no:10 },
+        7: { id:7, text: '나는 어린 아이들의 눈높이에 맞춰 이야기하거나 놀이로 다가가는 것을 잘한다.', yes:{result:['유아유치부']}, no:8 },
+        8: { id:8, text: '나는 성장기 아이들이 스스로 믿음을 가지도록 돕는데 보람을 느낀다.', yes:{result:['초등부','청소년부']}, no:{result:['새소식반']} },
+        9: { id:9, text: '기술적인 장비나 화면 구성, 기록을 다루는 걸 즐긴다.', yes:{result:['미디어부']}, no:10 },
+        10:{ id:10, text: '누군가에게 도움이 되었다는 말을 들을 때 큰 보람을 느낀다.', yes:11, no:14 },
+        11:{ id:11, text: '손으로 무언가를 만들어 나누거나, 직접 돕는 일을 좋아한다.', yes:{result:['이웃사랑(반찬조리/전달)']}, no:12 },
+        12:{ id:12, text: '눈에 띄지 않아도 누군가를 위해 꾸준히 기도하는 편이다.', yes:{result:['중보기도부','수요기도회']}, no:13 },
+        13:{ id:13, text: "음악을 들을 때 가사보다 '함께 부르는 느낌'에 더 집중한다.", yes:{result:['수요기도회','찬양팀']}, no:14 },
+        14:{ id:14, text: '아이들과 함께 있을 때, 자연스럽게 눈높이를 맞추고 대화할 수 있다.', yes:15, no:{result:['행사지원부']} },
+        15:{ id:15, text: '아이들이 성경 이야기를 듣고 반응할 때 큰 기쁨을 느낀다.', yes:{result:['유아유치부','초등부','청소년부','새소식반']}, no:{result:['이웃사랑(봉사팀)']} }
+      }
+    };
+
+    createApp({
+      setup(){
+        const currentId = ref(1);
+        const finished = ref(false);
+        const results = ref([]);
+        const path = ref([]);
+
+        const current = computed(()=> TREE.nodes[currentId.value]);
+        const currentType = computed(()=> {
+          const node = current.value;
+          if(!node) return '끝';
+          if(node.result || node.yes && node.yes.result) return '결과 노드';
+          return '질문 노드';
+        });
+
+        function choose(choice){
+          if(finished.value) return;
+          const node = current.value;
+          path.value.push({id: node.id, label: `Q${node.id}`});
+
+          // 다음으로 이동할 값 찾아오기
+          let next = (choice === 'yes') ? node.yes : node.no;
+
+          // 어떤 노드들은 yes/no에 직접 결과 객체를 붙여놨음.
+          if(next && next.result){
+            results.value = next.result;
+            finished.value = true;
+            return;
+          }
+
+          // 일부 노드의 yes/no는 숫자(다음 질문) 또는 undefined
+          if(typeof next === 'number'){
+            currentId.value = next;
+            return;
+          }
+
+          // 만약 next가 객체이고 node에 직접 result가 없을 때(예: node.yes = {result: [...]})
+          if(next && next.result === undefined && next.id){
+            currentId.value = next.id;
+            return;
+          }
+
+          // 마지막으로 next가 undefined나 null이면 현재 노드가 결과일 수 있음
+          if(!next){
+            // node 자체가 결과를 담고 있는지 확인
+            if(node.result) {
+              results.value = node.result;
+              finished.value = true;
+              return;
+            }
+            // fallback: 빈 결과
+            results.value = ['추천 사역이 없습니다'];
+            finished.value = true;
+          }
+        }
+
+        function restart(){ currentId.value = 1; finished.value = false; results.value = []; path.value = [] }
+
+        function exportShare(){
+          const text = `추천 사역: ${results.value.join(', ')}\n경로: ${path.value.map(p=>p.label).join(' → ')}`;
+          navigator.clipboard?.writeText(text).then(()=> alert('결과가 클립보드에 복사되었습니다'))
+        }
+
+        return { currentId, current, choose, finished, results, restart, exportShare, path, currentType }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>
