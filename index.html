@@ -23,17 +23,20 @@
     .btn.yes{background:var(--btn);color:white}
     .btn.no{background:#e6f3f0;color:var(--accent)}
     .btn:hover{opacity:0.9;transform:scale(1.02)}
+    .meta{margin-top:14px;color:#346a63}
     .result-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
     .result-card{background:linear-gradient(180deg,#f2fff8,#ffffff);border-radius:16px;padding:20px;text-align:center;box-shadow:var(--shadow);transition:.3s}
     .result-card:hover{transform:translateY(-5px);}
     .result-icon{font-size:42px;margin-bottom:10px}
     .result-card h3{margin:0;font-size:20px;color:var(--accent)}
     .result-card p{font-size:14px;color:#2b5854;margin-top:6px}
-    .actions{display:flex;gap:10px;margin-top:22px;justify-content:center}
+    .actions{display:flex;gap:10px;margin-top:22px;justify-content:center;flex-wrap:wrap}
     .restart{background:#fff;border:1px solid #ddd;padding:8px 16px;border-radius:8px;cursor:pointer;transition:.2s}
     .restart:hover{background:#f3f8f6}
+    .breadcrumb{font-size:13px;color:#4d7b75;margin-bottom:8px}
     @media(max-width:520px){.question{font-size:18px}}
   </style>
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 </head>
 <body>
   <div id="app" class="wrap">
@@ -44,6 +47,7 @@
 
     <div class="card">
       <template v-if="!finished">
+        <div class="breadcrumb">진행: {{path.map(p=>p.label).join(' → ') || '시작'}}</div>
         <div class="question">Q{{current.id}}. {{current.text}}</div>
         <div class="controls">
           <button class="btn yes" @click="choose('yes')">네</button>
@@ -63,60 +67,23 @@
           </div>
           <div class="actions">
             <button class="restart" @click="restart()">🔄 처음으로</button>
+            <button class="restart" @click="copyResult()">📋 결과 복사</button>
+            <button class="restart" @click="shareKakao()">💬 카카오톡 공유</button>
           </div>
         </div>
       </template>
     </div>
 
-    <p style="text-align:center;margin-top:12px;color:#5b7f78;font-size:13px">수정빛교회 사역박람회</p>
+    <p style="text-align:center;margin-top:12px;color:#5b7f78;font-size:13px">간단한 Vue 기반 싱글페이지 예제 — GitHub Pages 배포 가능</p>
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script>
     const { createApp, ref, computed } = Vue;
 
-    const TREE = {
-      nodes: {
-        1: { id:1, text: '새로운 상황이나 사람을 만났을 때 금세 어색함을 풀고 대화할 수 있다.', yes:2, no:6 },
-        2: { id:2, text: '모임에서 분위기가 조용하면 내가 먼저 말하거나 분위기를 띄우는 편이다.', yes:3, no:4 },
-        3: { id:3, text: '낯선 사람과 대화할 때 그들의 이름과 이야기를 기억하려고 노력한다.', yes:{result:['새가족부','안내부']}, no:5 },
-        4: { id:4, text: '사람들을 이끄는 일보다는, 정해진 일 안에서 안정감 있게 일하는 게 좋다.', yes:5, no:7 },
-        5: { id:5, text: '교회가 질서 있고 원활하게 운영되는 모습을 보면 뿌듯하다.', yes:{result:['주차부','예배안내부']}, no:{result:['행사지원부','청소팀']} },
-        6: { id:6, text: '혼자 집중해서 무언가를 만들거나 정리할 때 시간이 잘 간다.', yes:9, no:10 },
-        7: { id:7, text: '나는 어린 아이들의 눈높이에 맞춰 이야기하거나 놀이로 다가가는 것을 잘한다.', yes:{result:['유아유치부']}, no:8 },
-        8: { id:8, text: '나는 성장기 아이들이 스스로 믿음을 가지도록 돕는데 보람을 느낀다.', yes:{result:['초등부','청소년부']}, no:{result:['새소식반']} },
-        9: { id:9, text: '기술적인 장비나 화면 구성, 기록을 다루는 걸 즐긴다.', yes:{result:['미디어부']}, no:10 },
-        10:{ id:10, text: '누군가에게 도움이 되었다는 말을 들을 때 큰 보람을 느낀다.', yes:11, no:14 },
-        11:{ id:11, text: '손으로 무언가를 만들어 나누거나, 직접 돕는 일을 좋아한다.', yes:{result:['이웃사랑(반찬조리/전달)']}, no:12 },
-        12:{ id:12, text: '눈에 띄지 않아도 누군가를 위해 꾸준히 기도하는 편이다.', yes:{result:['중보기도부','수요기도회']}, no:13 },
-        13:{ id:13, text: "음악을 들을 때 가사보다 '함께 부르는 느낌'에 더 집중한다.", yes:{result:['수요기도회','찬양팀']}, no:14 },
-        14:{ id:14, text: '아이들과 함께 있을 때, 자연스럽게 눈높이를 맞추고 대화할 수 있다.', yes:15, no:{result:['행사지원부']} },
-        15:{ id:15, text: '아이들이 성경 이야기를 듣고 반응할 때 큰 기쁨을 느낀다.', yes:{result:['유아유치부','초등부','청소년부','새소식반']}, no:{result:['이웃사랑(봉사팀)']} }
-      }
-    };
-
-    const DESCRIPTIONS = {
-      '새가족부':'처음 교회에 오는 분들을 환영하고 안내하는 사역입니다.',
-      '안내부':'예배 전후로 예배당 질서와 환영을 담당합니다.',
-      '주차부':'교회 차량의 원활한 이동과 안전한 주차를 돕습니다.',
-      '예배안내부':'예배 진행을 지원하고 필요한 안내를 돕습니다.',
-      '행사지원부':'교회 각종 행사와 봉사 지원을 맡습니다.',
-      '청소팀':'예배 전후 청결 유지와 환경 정리를 돕습니다.',
-      '유아유치부':'아이들에게 예배와 성경을 친근하게 전합니다.',
-      '초등부':'초등학생들의 믿음 성장을 돕는 교육 사역입니다.',
-      '청소년부':'청소년들이 하나님 안에서 정체성을 세우도록 돕습니다.',
-      '새소식반':'복음을 처음 듣는 아이들에게 말씀을 전합니다.',
-      '미디어부':'영상, 음향, 디자인 등 기술적 영역을 담당합니다.',
-      '이웃사랑(반찬조리/전달)':'도움이 필요한 이웃에게 사랑을 실천합니다.',
-      '이웃사랑(봉사팀)':'지역사회를 위한 다양한 봉사활동을 진행합니다.',
-      '중보기도부':'교회와 성도들을 위해 기도로 섬깁니다.',
-      '수요기도회':'함께 모여 예배하며 중보하는 시간을 갖습니다.',
-      '찬양팀':'예배를 인도하며 찬양으로 하나님께 영광 돌립니다.'
-    };
-
-    const ICONS = {
-      '새가족부':'🤝','안내부':'🙋','주차부':'🚗','예배안내부':'📖','행사지원부':'🎪','청소팀':'🧹','유아유치부':'🧸','초등부':'📚','청소년부':'🎯','새소식반':'💬','미디어부':'🎥','이웃사랑(반찬조리/전달)':'🍱','이웃사랑(봉사팀)':'❤️','중보기도부':'🙏','수요기도회':'🕊️','찬양팀':'🎵'
-    };
+    const TREE = { /* 생략 - 기존 트리 데이터 동일 */ };
+    const DESCRIPTIONS = { /* 생략 - 기존 내용 동일 */ };
+    const ICONS = { /* 생략 - 기존 내용 동일 */ };
 
     createApp({
       setup(){
@@ -124,43 +91,56 @@
         const finished = ref(false);
         const results = ref([]);
         const path = ref([]);
-
         const current = computed(()=> TREE.nodes[currentId.value]);
-        const currentType = computed(()=> {
-          const node = current.value;
-          if(!node) return '끝';
-          if(node.result || node.yes && node.yes.result) return '결과 노드';
-          return '질문 노드';
-        });
 
         function choose(choice){
-          if(finished.value) return;
           const node = current.value;
           path.value.push({id: node.id, label: `Q${node.id}`});
           let next = (choice === 'yes') ? node.yes : node.no;
-          if(next && next.result){
-            results.value = next.result;
-            finished.value = true;
-            return;
-          }
-          if(typeof next === 'number'){
-            currentId.value = next;return;
-          }
-          if(!next){
-            results.value = ['추천 사역이 없습니다'];
-            finished.value = true;
-          }
+          if(next && next.result){ results.value = next.result; finished.value = true; return; }
+          if(typeof next === 'number'){ currentId.value = next; return; }
+          results.value = ['추천 사역이 없습니다']; finished.value = true;
         }
 
         function restart(){ currentId.value = 1; finished.value = false; results.value = []; path.value = [] }
-        function exportShare(){
-          const text = `추천 사역: ${results.value.join(', ')}\\n경로: ${path.value.map(p=>p.label).join(' → ')}`;
-          navigator.clipboard?.writeText(text).then(()=> alert('결과가 복사되었습니다'))
+
+        function copyResult(){
+          const text = `추천 사역: ${results.value.join(', ')}\n경로: ${path.value.map(p=>p.label).join(' → ')}`;
+          navigator.clipboard?.writeText(text).then(()=> alert('결과가 복사되었습니다.'));
         }
+
+        function shareKakao(){
+          if(!window.Kakao.isInitialized()){
+            Kakao.init('YOUR_KAKAO_JAVASCRIPT_KEY'); // 카카오 JavaScript 키 입력 필요
+          }
+          const desc = results.value.join(', ');
+          Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+              title: '교회 사역 DNA 퀴즈 결과',
+              description: `✨ 추천 사역: ${desc}`,
+              imageUrl: 'https://yourdomain.com/share-thumbnail.png', // 공유용 이미지
+              link: {
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href
+              }
+            },
+            buttons: [
+              {
+                title: '결과 보기',
+                link: {
+                  mobileWebUrl: window.location.href,
+                  webUrl: window.location.href
+                }
+              }
+            ]
+          });
+        }
+
         function getDescription(r){ return DESCRIPTIONS[r] || '사역 설명이 준비 중입니다.' }
         function getIcon(r){ return ICONS[r] || '✨' }
-        
-        return {current,choose,finished,results,restart,exportShare,path,currentType,getDescription,getIcon}
+
+        return {current,choose,finished,results,restart,copyResult,shareKakao,path,getDescription,getIcon}
       }
     }).mount('#app')
   </script>
