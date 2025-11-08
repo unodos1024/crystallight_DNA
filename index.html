@@ -23,7 +23,6 @@
     .btn.yes{background:var(--btn);color:white}
     .btn.no{background:#e6f3f0;color:var(--accent)}
     .btn:hover{opacity:0.9;transform:scale(1.02)}
-    .meta{margin-top:14px;color:#346a63}
     .result-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
     .result-card{background:linear-gradient(180deg,#f2fff8,#ffffff);border-radius:16px;padding:20px;text-align:center;box-shadow:var(--shadow);transition:.3s}
     .result-card:hover{transform:translateY(-5px);}
@@ -33,7 +32,6 @@
     .actions{display:flex;gap:10px;margin-top:22px;justify-content:center}
     .restart{background:#fff;border:1px solid #ddd;padding:8px 16px;border-radius:8px;cursor:pointer;transition:.2s}
     .restart:hover{background:#f3f8f6}
-    .breadcrumb{font-size:13px;color:#4d7b75;margin-bottom:8px}
     @media(max-width:520px){.question{font-size:18px}}
   </style>
 </head>
@@ -46,13 +44,11 @@
 
     <div class="card">
       <template v-if="!finished">
-        <div class="breadcrumb">진행: {{path.map(p=>p.label).join(' → ') || '시작'}}</div>
         <div class="question">Q{{current.id}}. {{current.text}}</div>
         <div class="controls">
           <button class="btn yes" @click="choose('yes')">네</button>
           <button class="btn no" @click="choose('no')">아니오</button>
         </div>
-        <div class="meta">현재 노드: {{currentType}}</div>
       </template>
 
       <template v-else>
