@@ -140,7 +140,7 @@
 
     <div class="card">
       <template v-if="!finished">
-        <div class="question">Q{{current.id}}. {{current.text}}</div>
+        <div class="question">{{current.text}}</div>
         <div class="controls">
           <button class="btn yes" @click="choose('yes')">YES</button>
           <button class="btn no" @click="choose('no')">NO</button>
