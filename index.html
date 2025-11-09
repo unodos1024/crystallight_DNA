@@ -3,56 +3,153 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>교회 사역 DNA 퀴즈</title>
+  <title>나는 어떤 사역 DNA일까?</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap');
     :root{
-      --bg:#e9f7f3;--card:#fff;--accent:#0b6b5f;--btn:#0b9b7f;--shadow:0 6px 20px rgba(2,24,26,0.06);
+      --bg1:#d6f5e9;
+      --bg2:#f8fff9;
+      --card:#ffffff;
+      --accent:#0b6b5f;
+      --btn-yes:#15b394;
+      --btn-no:#c9e9e0;
+      --shadow:0 8px 20px rgba(0,0,0,0.08);
     }
     body{
-      font-family:system-ui,-apple-system,"Noto Sans KR",Helvetica,Arial;
-      margin:0;background:linear-gradient(180deg,var(--bg),#f7fffb);
-      color:#08323a;
+      font-family:'Noto Sans KR', sans-serif;
+      margin:0;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#084038;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding:40px 16px;
     }
-    .wrap{max-width:900px;margin:40px auto;padding:24px}
-    .header{text-align:center;margin-bottom:24px}
-    .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
-    .question{font-size:20px;font-weight:700;margin-bottom:20px}
-    .controls{display:flex;gap:12px}
-    .btn{flex:1;padding:12px;border-radius:10px;border:0;font-weight:700;cursor:pointer;transition:.25s}
-    .btn.yes{background:var(--btn);color:white}
-    .btn.no{background:#e6f3f0;color:var(--accent)}
-    .btn:hover{opacity:0.9;transform:scale(1.02)}
-    .result-grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
-    .result-card{background:linear-gradient(180deg,#f2fff8,#ffffff);border-radius:16px;padding:20px;text-align:center;box-shadow:var(--shadow);transition:.3s}
-    .result-card:hover{transform:translateY(-6px)}
-    .result-icon{font-size:40px;margin-bottom:8px}
-    .result-card h3{margin:0;font-size:18px;color:var(--accent)}
-    .result-card p{font-size:14px;color:#2b5854;margin-top:6px}
-    .actions{display:flex;gap:10px;margin-top:20px;justify-content:center}
-    .restart{background:#fff;border:1px solid #ddd;padding:8px 16px;border-radius:8px;cursor:pointer;transition:.2s}
-    .restart:hover{background:#f3f8f6}
-    @media(max-width:520px){.question{font-size:18px}}
+    .wrap{
+      max-width:860px;
+      width:100%;
+      background:var(--card);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:28px;
+      text-align:center;
+      position:relative;
+    }
+    .header h1{
+      font-family:'Jua',sans-serif;
+      font-size:32px;
+      color:#0b6b5f;
+      margin:0 0 8px 0;
+    }
+    .header p{
+      color:#4a7a70;
+      font-size:15px;
+      margin:0 0 24px;
+    }
+
+    .question{
+      font-size:22px;
+      font-weight:600;
+      color:#083a31;
+      margin-bottom:28px;
+    }
+    .controls{
+      display:flex;
+      gap:16px;
+      justify-content:center;
+    }
+    .btn{
+      flex:1;
+      max-width:180px;
+      padding:14px 0;
+      border-radius:12px;
+      border:0;
+      font-size:18px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.25s;
+      box-shadow:0 3px 6px rgba(0,0,0,0.05);
+    }
+    .btn.yes{
+      background:var(--btn-yes);
+      color:white;
+    }
+    .btn.no{
+      background:var(--btn-no);
+      color:var(--accent);
+    }
+    .btn:hover{transform:scale(1.05);opacity:0.95;}
+
+    .card{
+      padding:24px;
+      border-radius:16px;
+      background:#f9fffd;
+      box-shadow:inset 0 0 10px rgba(0,0,0,0.02);
+    }
+
+    .result-grid{
+      display:grid;
+      gap:20px;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      margin-top:24px;
+    }
+    .result-card{
+      background:linear-gradient(180deg,#f3fff8,#ffffff);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:var(--shadow);
+      transition:.3s;
+    }
+    .result-card:hover{transform:translateY(-6px);}
+    .result-icon{font-size:42px;margin-bottom:8px;}
+    .result-card h3{margin:0;font-size:18px;color:#0b6b5f;font-weight:700;}
+    .result-card p{font-size:14px;color:#2b5854;margin-top:6px;line-height:1.4;}
+
+    .actions{margin-top:24px;}
+    .restart{
+      background:#fff;
+      border:2px solid #0b9b7f;
+      color:#0b9b7f;
+      font-weight:600;
+      padding:10px 18px;
+      border-radius:10px;
+      cursor:pointer;
+      transition:.2s;
+    }
+    .restart:hover{background:#0b9b7f;color:white;}
+
+    .footer{
+      margin-top:28px;
+      font-size:13px;
+      color:#5b7f78;
+    }
+
+    @media(max-width:520px){
+      .question{font-size:18px;}
+      .btn{font-size:16px;}
+    }
   </style>
 </head>
 <body>
   <div id="app" class="wrap">
     <div class="header">
-      <h1>교회 사역 매칭 퀴즈</h1>
-      <p style="font-size:14px;color:#557872">질문에 답해보며 나에게 맞는 사역을 찾아보세요</p>
+      <h1>나는 어떤 사역 DNA일까?</h1>
+      <p>질문에 답하면서 나에게 맞는 교회 사역을 찾아보세요</p>
     </div>
 
     <div class="card">
       <template v-if="!finished">
         <div class="question">Q{{current.id}}. {{current.text}}</div>
         <div class="controls">
-          <button class="btn yes" @click="choose('yes')">네</button>
-          <button class="btn no" @click="choose('no')">아니오</button>
+          <button class="btn yes" @click="choose('yes')">YES</button>
+          <button class="btn no" @click="choose('no')">NO</button>
         </div>
       </template>
 
       <template v-else>
-        <div style="text-align:center">
-          <h2 style="color:var(--accent);margin-bottom:12px">✨ 당신에게 어울리는 사역 ✨</h2>
+        <div>
+          <h2 style="color:#0b6b5f;margin-bottom:12px;font-family:'Jua';font-size:26px">✨ 당신에게 어울리는 사역 ✨</h2>
           <div class="result-grid">
             <div v-for="(r,i) in results" :key="i" class="result-card">
               <div class="result-icon">{{getIcon(r)}}</div>
@@ -61,13 +158,13 @@
             </div>
           </div>
           <div class="actions">
-            <button class="restart" @click="restart()">🔄 처음으로</button>
+            <button class="restart" @click="restart()">🔄 다시 시작</button>
           </div>
         </div>
       </template>
     </div>
 
-    <p style="text-align:center;margin-top:14px;color:#5b7f78;font-size:13px">수정빛교회 사역박람회</p>
+    <div class="footer">수정빛교회 사역박람회</div>
   </div>
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
@@ -76,25 +173,25 @@
 
     const TREE = {
       nodes: {
-        1: { id:1, text:'새로운 상황이나 사람을 만났을 때 금세 어색함을 풀고 대화할 수 있다.', yes:2, no:6 },
-        2: { id:2, text:'모임에서 분위기가 조용하면 내가 먼저 말하거나 분위기를 띄우는 편이다.', yes:3, no:4 },
-        3: { id:3, text:'낯선 사람과 대화할 때 그들의 이름과 이야기를 기억하려고 노력한다.', yes:{result:['새가족부','안내부']}, no:5 },
-        4: { id:4, text:'사람들을 이끄는 일보다는, 정해진 일 안에서 안정감 있게 일하는 게 좋다.', yes:5, no:7 },
-        5: { id:5, text:'교회가 질서 있고 원활하게 운영되는 모습을 보면 뿌듯하다.', yes:{result:['주차부','예배안내부']}, no:{result:['행사지원부','청소팀']} },
-        6: { id:6, text:'혼자 집중해서 무언가를 만들거나 정리할 때 시간이 잘 간다.', yes:9, no:10 },
-        7: { id:7, text:'나는 어린 아이들의 눈높이에 맞춰 이야기하거나 놀이로 다가가는 것을 잘한다.', yes:{result:['유아유치부']}, no:8 },
-        8: { id:8, text:'나는 성장기 아이들이 스스로 믿음을 가지도록 돕는데 보람을 느낀다.', yes:{result:['초등부','청소년부']}, no:{result:['새소식반']} },
-        9: { id:9, text:'기술적인 장비나 화면 구성, 기록을 다루는 걸 즐긴다.', yes:{result:['미디어부']}, no:10 },
-        10:{ id:10, text:'누군가에게 도움이 되었다는 말을 들을 때 큰 보람을 느낀다.', yes:11, no:14 },
-        11:{ id:11, text:'손으로 무언가를 만들어 나누거나, 직접 돕는 일을 좋아한다.', yes:{result:['이웃사랑(반찬조리/전달)']}, no:12 },
-        12:{ id:12, text:'눈에 띄지 않아도 누군가를 위해 꾸준히 기도하는 편이다.', yes:{result:['중보기도부','수요기도회']}, no:13 },
-        13:{ id:13, text:"음악을 들을 때 가사보다 '함께 부르는 느낌'에 더 집중한다.", yes:{result:['수요기도회','찬양팀']}, no:14 },
-        14:{ id:14, text:'아이들과 함께 있을 때, 자연스럽게 눈높이를 맞추고 대화할 수 있다.', yes:15, no:{result:['행사지원부']} },
-        15:{ id:15, text:'아이들이 성경 이야기를 듣고 반응할 때 큰 기쁨을 느낀다.', yes:{result:['유아유치부','초등부','청소년부','새소식반']}, no:{result:['이웃사랑(봉사팀)']} }
+        1:{id:1,text:'새로운 상황이나 사람을 만났을 때 금세 어색함을 풀고 대화할 수 있다.',yes:2,no:6},
+        2:{id:2,text:'모임에서 분위기가 조용하면 내가 먼저 말하거나 분위기를 띄우는 편이다.',yes:3,no:4},
+        3:{id:3,text:'낯선 사람과 대화할 때 그들의 이름과 이야기를 기억하려고 노력한다.',yes:{result:['새가족부','안내부']},no:5},
+        4:{id:4,text:'사람들을 이끄는 일보다는 정해진 일 안에서 안정감 있게 일하는 게 좋다.',yes:5,no:7},
+        5:{id:5,text:'교회가 질서 있고 원활하게 운영되는 모습을 보면 뿌듯하다.',yes:{result:['주차부','예배안내부']},no:{result:['행사지원부','청소팀']}},
+        6:{id:6,text:'혼자 집중해서 무언가를 만들거나 정리할 때 시간이 잘 간다.',yes:9,no:10},
+        7:{id:7,text:'나는 어린 아이들의 눈높이에 맞춰 이야기하거나 놀이로 다가가는 것을 잘한다.',yes:{result:['유아유치부']},no:8},
+        8:{id:8,text:'나는 성장기 아이들이 스스로 믿음을 가지도록 돕는데 보람을 느낀다.',yes:{result:['초등부','청소년부']},no:{result:['새소식반']}},
+        9:{id:9,text:'기술적인 장비나 화면 구성, 기록을 다루는 걸 즐긴다.',yes:{result:['미디어부']},no:10},
+        10:{id:10,text:'누군가에게 도움이 되었다는 말을 들을 때 큰 보람을 느낀다.',yes:11,no:14},
+        11:{id:11,text:'손으로 무언가를 만들어 나누거나, 직접 돕는 일을 좋아한다.',yes:{result:['이웃사랑(반찬조리/전달)']},no:12},
+        12:{id:12,text:'눈에 띄지 않아도 누군가를 위해 꾸준히 기도하는 편이다.',yes:{result:['중보기도부','수요기도회']},no:13},
+        13:{id:13,text:"음악을 들을 때 가사보다 '함께 부르는 느낌'에 더 집중한다.",yes:{result:['수요기도회','찬양팀']},no:14},
+        14:{id:14,text:'아이들과 함께 있을 때, 자연스럽게 눈높이를 맞추고 대화할 수 있다.',yes:15,no:{result:['행사지원부']}},
+        15:{id:15,text:'아이들이 성경 이야기를 듣고 반응할 때 큰 기쁨을 느낀다.',yes:{result:['유아유치부','초등부','청소년부','새소식반']},no:{result:['이웃사랑(봉사팀)']}}
       }
     };
 
-    const DESCRIPTIONS = {
+    const DESCRIPTIONS={
       '새가족부':'처음 교회에 오는 분들을 환영하고 안내하는 사역입니다.',
       '안내부':'예배 전후로 예배당 질서와 환영을 담당합니다.',
       '주차부':'교회 차량의 원활한 이동과 안전한 주차를 돕습니다.',
@@ -112,46 +209,36 @@
       '수요기도회':'함께 모여 예배하며 중보하는 시간을 갖습니다.',
       '찬양팀':'예배를 인도하며 찬양으로 하나님께 영광 돌립니다.'
     };
-
-    const ICONS = {
-      '새가족부':'🤝','안내부':'🙋','주차부':'🚗','예배안내부':'📖','행사지원부':'🎪','청소팀':'🧹','유아유치부':'🧸','초등부':'📚','청소년부':'🎯','새소식반':'💬','미디어부':'🎥','이웃사랑(반찬조리/전달)':'🍱','이웃사랑(봉사팀)':'❤️','중보기도부':'🙏','수요기도회':'🕊️','찬양팀':'🎵'
+    const ICONS={
+      '새가족부':'🤝','안내부':'🙋','주차부':'🚗','예배안내부':'📖','행사지원부':'🎪','청소팀':'🧹',
+      '유아유치부':'🧸','초등부':'📚','청소년부':'🎯','새소식반':'💬','미디어부':'🎥',
+      '이웃사랑(반찬조리/전달)':'🍱','이웃사랑(봉사팀)':'❤️','중보기도부':'🙏','수요기도회':'🕊️','찬양팀':'🎵'
     };
 
     createApp({
       setup(){
-        const currentId = ref(1);
-        const finished = ref(false);
-        const results = ref([]);
-
-        const current = computed(()=> TREE.nodes[currentId.value]);
-
+        const currentId=ref(1);
+        const finished=ref(false);
+        const results=ref([]);
+        const current=computed(()=>TREE.nodes[currentId.value]);
         function choose(choice){
-          if(finished.value) return;
-          const node = current.value;
-          let next = (choice === 'yes') ? node.yes : node.no;
-          if(next && next.result){
-            results.value = next.result;
-            finished.value = true;
+          if(finished.value)return;
+          const node=current.value;
+          const next=(choice==='yes')?node.yes:node.no;
+          if(next&&next.result){
+            results.value=next.result;
+            finished.value=true;
             return;
           }
-          if(typeof next === 'number') currentId.value = next;
-          else{
-            results.value = ['추천 사역이 없습니다'];
-            finished.value = true;
-          }
+          if(typeof next==='number')currentId.value=next;
+          else{results.value=['추천 사역이 없습니다'];finished.value=true;}
         }
-
-        function restart(){ currentId.value = 1; finished.value = false; results.value = [] }
-        function exportShare(){
-          const text = `추천 사역: ${results.value.join(', ')}`;
-          navigator.clipboard?.writeText(text).then(()=> alert('결과가 복사되었습니다'));
-        }
-        function getDescription(r){ return DESCRIPTIONS[r] || '사역 설명이 준비 중입니다.' }
-        function getIcon(r){ return ICONS[r] || '✨' }
-
-        return {current,choose,finished,results,restart,exportShare,getDescription,getIcon}
+        function restart(){currentId.value=1;finished.value=false;results.value=[];}
+        function getDescription(r){return DESCRIPTIONS[r]||'사역 설명이 준비 중입니다.';}
+        function getIcon(r){return ICONS[r]||'✨';}
+        return{current,choose,finished,results,restart,getDescription,getIcon};
       }
-    }).mount('#app')
+    }).mount('#app');
   </script>
 </body>
 </html>
